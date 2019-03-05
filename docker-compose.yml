@@ -1,0 +1,12 @@
+version: "3"
+services:
+  sleepy:
+    image: 1maa/sleepy:latest
+  hoverfly:
+    image: spectolabs/hoverfly:v1.0.0-rc.2
+    command: -capture
+  runner:
+    image: 1maa/php-dev:7.1
+    volumes:
+      - .:/root/hydra
+    working_dir: /root/hydra

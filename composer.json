@@ -1,0 +1,40 @@
+{
+    "name": "uma/hydra",
+    "description": "Bulk HTTP client based on the multi cURL handler",
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=7.1",
+        "ext-curl": "*",
+        "guzzlehttp/psr7": "^1.5",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpmetrics/phpmetrics": "^2.4",
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "UMA\\Hydra\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "UMA\\Hydra\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "docker-compose up -d",
+            "docker-compose exec -T runner sh -c \"php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox\""
+        ],
+        "metrics": [
+            "@test",
+            "docker-compose exec -T runner sh -c \"vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .\""
+        ],
+        "cleanup": "docker-compose down -v"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
