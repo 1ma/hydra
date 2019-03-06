@@ -90,9 +90,8 @@ final class BulkClientTest extends TestCase
 
         $stats = $this->callback->lastStats();
         self::assertGreaterThan(0, $stats->receivingTime());
-        self::assertGreaterThan(0, $stats->serverProcessingTime());
-        self::assertLessThan(0.1, $stats->serverProcessingTime());
-        self::assertNotEmpty($stats->telegrafTimingsFieldSet());
+        self::assertGreaterThan(0, $stats->timeToFirstByte());
+        self::assertLessThan(0.1, $stats->timeToFirstByte());
     }
 
     public function testProxyAndResponseTimeout(): void
