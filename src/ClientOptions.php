@@ -7,10 +7,19 @@ namespace UMA\Hydra;
 final class ClientOptions
 {
     /**
-     * Times are in milliseconds!
+     * @see https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
      */
-    private const DEFAULT_CONNECTION_TIMEOUT = 500;
-    private const DEFAULT_RESPONSE_TIMEOUT = 2000;
+    private const DEFAULT_CONNECTION_TIMEOUT = 300000;
+
+    /**
+     * @see https://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html
+     */
+    private const DEFAULT_RESPONSE_TIMEOUT = 0;
+
+    /**
+     * @see https://curl.haxx.se/libcurl/c/CURLOPT_DNS_CACHE_TIMEOUT.html
+     */
+    private const DEFAULT_DNS_CACHE_TIMEOUT = 60;
 
     /**
      * @var int
@@ -23,32 +32,44 @@ final class ClientOptions
     private $responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
 
     /**
-     * @var bool
+     * @var int
      */
-    private $dnsCaching = true;
+    private $dnsCaching = self::DEFAULT_DNS_CACHE_TIMEOUT;
 
     /**
      * @var string|null
      */
     private $proxyUrl;
 
-    public function withCustomConnectionTimeout(int $ms): ClientOptions
+    /**
+     * @var array
+     */
+    private $customOpts = [];
+
+    public function withCustomConnectionTimeout(int $milliSeconds): ClientOptions
     {
-        $this->connectionTimeout = $ms;
+        $this->connectionTimeout = $milliSeconds;
 
         return $this;
     }
 
-    public function withCustomResponseTimeout(int $ms): ClientOptions
+    public function withCustomResponseTimeout(int $milliSeconds): ClientOptions
     {
-        $this->responseTimeout = $ms;
+        $this->responseTimeout = $milliSeconds;
 
         return $this;
     }
 
-    public function withDisabledDNSCaching(): ClientOptions
+    public function withCustomDnsCacheTimeout(int $seconds): ClientOptions
     {
-        $this->dnsCaching = false;
+        $this->dnsCaching = $seconds;
+
+        return $this;
+    }
+
+    public function withDisabledDnsCaching(): ClientOptions
+    {
+        $this->dnsCaching = 0;
 
         return $this;
     }
@@ -56,6 +77,13 @@ final class ClientOptions
     public function withProxy(string $proxyUrl): ClientOptions
     {
         $this->proxyUrl = $proxyUrl;
+
+        return $this;
+    }
+
+    public function withCustomCurlOption(int $option, $value): ClientOptions
+    {
+        $this->customOpts[$option] = $value;
 
         return $this;
     }
@@ -70,7 +98,7 @@ final class ClientOptions
         return $this->responseTimeout;
     }
 
-    public function dnsCachingEnabled(): bool
+    public function dnsCacheTimeout(): int
     {
         return $this->dnsCaching;
     }
@@ -78,5 +106,10 @@ final class ClientOptions
     public function proxyUrl(): ?string
     {
         return $this->proxyUrl;
+    }
+
+    public function customOptions(): array
+    {
+        return $this->customOpts;
     }
 }

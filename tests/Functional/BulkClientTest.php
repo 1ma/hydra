@@ -97,9 +97,11 @@ final class BulkClientTest extends TestCase
     public function testProxyAndResponseTimeout(): void
     {
         $customOptions = (new ClientOptions)
-            ->withDisabledDNSCaching()
+            ->withDisabledDnsCaching()
             ->withCustomConnectionTimeout(100)
             ->withCustomResponseTimeout(100)
+            ->withCustomDnsCacheTimeout(10)
+            ->withCustomCurlOption(CURLOPT_SSL_VERIFYPEER, 0)
             ->withProxy('http://hoverfly:8500');
 
         $customClient = new BulkClient($customOptions);

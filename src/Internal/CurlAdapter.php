@@ -28,9 +28,10 @@ final class CurlAdapter
         \curl_setopt($handle, CURLOPT_USERAGENT, self::USER_AGENT);
         \curl_setopt($handle, CURLOPT_CONNECTTIMEOUT_MS, $options->connectionTimeout());
         \curl_setopt($handle, CURLOPT_TIMEOUT_MS, $options->responseTimeout());
+        \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, $options->dnsCacheTimeout());
 
-        if (!$options->dnsCachingEnabled()) {
-            \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, 0);
+        foreach ($options->customOptions() as $option => $value) {
+            \curl_setopt($handle, $option, $value);
         }
 
         if (null !== $proxyUrl = $options->proxyUrl()) {
