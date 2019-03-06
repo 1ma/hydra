@@ -9,7 +9,7 @@ use UMA\Hydra\ClientOptions;
 
 final class CurlAdapter
 {
-    private const USER_AGENT = 'oc_http/0.1';
+    private const HYDRA_USER_AGENT = 'hydra/0.1.0';
 
     /**
      * Returns a cURL handle functionally equivalent to
@@ -25,7 +25,7 @@ final class CurlAdapter
         \curl_setopt($handle, CURLOPT_URL, (string) $request->getUri());
         \curl_setopt($handle, CURLOPT_HEADER, false);
         \curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($handle, CURLOPT_USERAGENT, self::USER_AGENT);
+        \curl_setopt($handle, CURLOPT_USERAGENT, self::defaultUserAgent());
         \curl_setopt($handle, CURLOPT_CONNECTTIMEOUT_MS, $options->connectionTimeout());
         \curl_setopt($handle, CURLOPT_TIMEOUT_MS, $options->responseTimeout());
         \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, $options->dnsCacheTimeout());
@@ -75,5 +75,13 @@ final class CurlAdapter
         }
 
         return $headers;
+    }
+
+    /**
+     * @example 'hydra/0.1.0 curl/7.64.0 PHP/7.3.2'
+     */
+    private static function defaultUserAgent(): string
+    {
+        return \sprintf('%s curl/%s PHP/%s', self::HYDRA_USER_AGENT, \curl_version()['version'], PHP_VERSION);
     }
 }
