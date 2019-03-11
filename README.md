@@ -1,6 +1,6 @@
 # uma/hydra
 
-The Hydra Bulk HTTP client.
+Hydra is a simple cURL-based concurrent HTTP client abstracted behind an easy to use PSR-7 wrapper.
 
 
 ## Install
@@ -14,27 +14,51 @@ composer require uma/hydra
 
 ## Quick Demo
 
+In a few words, you call `load` repeatedly passing a PSR-7 request and the service that will handle
+its response. Once you've loaded all the requests you want to send at once, call `sendAll`. While
+this method runs it will call each request's callback in the order it receives their responses.
+`sendAll` blocks until all responses are received and their callbacks have been executed.
+
+Moreover, the client never throws an exception (any encountered errors are notified to the relevant
+callback without interrupting the execution flow).
+
 ```php
-$callback = new class implements Callback {
-    public function handle(RequestInterface $request, ?ResponseInterface $response, CurlStats $stats): void
+<?php
+
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use UMA\Hydra;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$callback = new class implements Hydra\Callback {
+    public function handle(RequestInterface $request, ?ResponseInterface $response, Hydra\CurlStats $stats): void
     {
-        echo \sprintf("%s %s %s\n", $stats->error_code, $stats->total_time, (string) $request->getUri());
+        echo \sprintf(
+            "%b %s %s %s\n",
+            null === $response,
+            $stats->error_code,
+            $stats->total_time,
+            (string) $request->getUri()
+        );
     }
 };
 
 $time = \microtime(true);
 
-$bulkClient = new BulkClient(new ClientOptions());
+$bulkClient = new Hydra\BulkClient();
 $bulkClient->load(new Request('GET', 'https://www.google.com/'), $callback);
 $bulkClient->load(new Request('GET', 'https://packagist.org/'), $callback);
 $bulkClient->load(new Request('GET', 'https://invalid.doma.in/'), $callback);
+
 $bulkClient->sendAll();
-// 6 0.000133 https://invalid.doma.in/
-// 0 0.147821 https://packagist.org/
-// 0 0.17111 https://www.google.com/
+// 1 6 0.009291 https://invalid.doma.in/
+// 0 0 0.162465 https://www.google.com/
+// 0 0 0.26687 https://packagist.org/
 
 echo \sprintf("\nTotal elapsed time: %s\n", \microtime(true) - $time);
-// Total elapsed time: 0.17644190788269
+// Total elapsed time: 0.27728295326233
 ```
 
 
@@ -80,6 +104,18 @@ $customOptions = (new ClientOptions)
 
 $customClient = new BulkClient($customOptions);
 ```
+
+
+## FAQ
+
+### How does Hydra compare to Guzzle?
+
+### Why does Hydra depend on the `guzzle/psr7` package
+
+### Why Hydra does not implement PSR-18
+
+### Tips on writing callbacks
+
 
 ## Testing
 
