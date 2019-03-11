@@ -25,10 +25,10 @@ final class BulkClient
      */
     private $options;
 
-    public function __construct(ClientOptions $options)
+    public function __construct(ClientOptions $options = null)
     {
         $this->backlog = [];
-        $this->options = $options;
+        $this->options = $options ?? new ClientOptions;
 
         $this->blankState();
     }
