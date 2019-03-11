@@ -5,8 +5,18 @@ services:
   hoverfly:
     image: spectolabs/hoverfly:v1.0.0-rc.2
     command: -capture
-  runner:
+  php71:
     image: 1maa/php-dev:7.1
+    volumes:
+      - .:/root/hydra
+    working_dir: /root/hydra
+  php72:
+    image: 1maa/php-dev:7.2
+    volumes:
+      - .:/root/hydra
+    working_dir: /root/hydra
+  php73:
+    image: 1maa/php-dev:7.3
     volumes:
       - .:/root/hydra
     working_dir: /root/hydra

@@ -24,5 +24,19 @@ php71:
   stage: testing
   script:
     - docker-compose up -d
-    - docker-compose exec -T runner sh -c "composer install"
-    - docker-compose exec -T runner sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+    - docker-compose exec -T php71 sh -c "composer install"
+    - docker-compose exec -T php71 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+
+php72:
+  stage: testing
+  script:
+    - docker-compose up -d
+    - docker-compose exec -T php72 sh -c "composer install"
+    - docker-compose exec -T php72 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+
+php73:
+  stage: testing
+  script:
+    - docker-compose up -d
+    - docker-compose exec -T php73 sh -c "composer install"
+    - docker-compose exec -T php73 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
