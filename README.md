@@ -1,5 +1,7 @@
 # uma/hydra
 
+[![pipeline status](https://gitlab.com/1ma/hydra/badges/master/pipeline.svg)](https://gitlab.com/1ma/hydra/commits/master)
+
 Hydra is a simple cURL-based concurrent HTTP client abstracted behind an easy to use PSR-7 wrapper.
 
 
@@ -32,8 +34,12 @@ use UMA\Hydra;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$callback = new class implements Hydra\Callback {
-    public function handle(RequestInterface $request, ?ResponseInterface $response, Hydra\CurlStats $stats): void
+class DemoCallback implements Hydra\Callback {
+    public function handle(
+        RequestInterface $request,
+        ?ResponseInterface $response,
+        Hydra\CurlStats $stats
+    ): void
     {
         echo \sprintf(
             "%b %s %s %s\n",
@@ -43,16 +49,17 @@ $callback = new class implements Hydra\Callback {
             (string) $request->getUri()
         );
     }
-};
+}
 
 $time = \microtime(true);
 
-$bulkClient = new Hydra\BulkClient();
-$bulkClient->load(new Request('GET', 'https://www.google.com/'), $callback);
-$bulkClient->load(new Request('GET', 'https://packagist.org/'), $callback);
-$bulkClient->load(new Request('GET', 'https://invalid.doma.in/'), $callback);
+$callback = new DemoCallback();
+$client = new Hydra\BulkClient();
+$client->load(new Request('GET', 'https://www.google.com/'), $callback);
+$client->load(new Request('GET', 'https://packagist.org/'), $callback);
+$client->load(new Request('GET', 'https://invalid.doma.in/'), $callback);
 
-$bulkClient->sendAll();
+$client->sendAll();
 // 1 6 0.009291 https://invalid.doma.in/
 // 0 0 0.162465 https://www.google.com/
 // 0 0 0.26687 https://packagist.org/
