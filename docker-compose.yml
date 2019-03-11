@@ -1,22 +1,35 @@
 version: "3"
 services:
-  sleepy:
-    image: 1maa/sleepy:latest
   hoverfly:
     image: spectolabs/hoverfly:v1.0.0-rc.2
     command: -capture
-  php71:
+
+  sleepy:
+    image: 1maa/sleepy:latest
+
+  php-7.1:
     image: 1maa/php-dev:7.1
+    depends_on:
+      - hoverfly
+      - sleepy
     volumes:
       - .:/root/hydra
     working_dir: /root/hydra
-  php72:
+
+  php-7.2:
     image: 1maa/php-dev:7.2
+    depends_on:
+      - hoverfly
+      - sleepy
     volumes:
       - .:/root/hydra
     working_dir: /root/hydra
-  php73:
+
+  php-7.3:
     image: 1maa/php-dev:7.3
+    depends_on:
+      - hoverfly
+      - sleepy
     volumes:
       - .:/root/hydra
     working_dir: /root/hydra
