@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UMA\Hydra\Tests\Functional;
 
-use GuzzleHttp\Psr7\Request;
+use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use UMA\Hydra\BulkClient;
 use UMA\Hydra\ClientOptions;

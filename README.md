@@ -1,6 +1,6 @@
 # uma/hydra
 
-[![pipeline status](https://gitlab.com/1ma/hydra/badges/master/pipeline.svg)](https://gitlab.com/1ma/hydra/commits/master)
+[![pipeline status](https://gitlab.com/1ma/hydra/badges/master/pipeline.svg)](https://gitlab.com/1ma/hydra/pipelines)
 
 Hydra is a simple cURL-based concurrent HTTP client abstracted behind an easy to use PSR-7 wrapper.
 
@@ -27,7 +27,7 @@ callback without interrupting the execution flow).
 ```php
 <?php
 
-use GuzzleHttp\Psr7\Request;
+use Nyholm\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use UMA\Hydra;
@@ -117,7 +117,7 @@ $customClient = new BulkClient($customOptions);
 
 ### How does Hydra compare to Guzzle?
 
-### Why does Hydra depend on the `guzzle/psr7` package
+### Why does Hydra depend on the `nyholm/psr7` package
 
 ### Why Hydra does not implement PSR-18
 

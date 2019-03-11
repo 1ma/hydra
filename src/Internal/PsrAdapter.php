@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UMA\Hydra\Internal;
 
-use GuzzleHttp\Psr7\Response;
+use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 
 final class PsrAdapter
