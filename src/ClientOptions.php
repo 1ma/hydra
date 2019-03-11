@@ -6,6 +6,8 @@ namespace UMA\Hydra;
 
 final class ClientOptions
 {
+    public const HYDRA_USER_AGENT = 'hydra/0.1.0';
+
     /**
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
      */
@@ -42,9 +44,19 @@ final class ClientOptions
     private $proxyUrl;
 
     /**
+     * @var string
+     */
+    private $userAgent;
+
+    /**
      * @var array
      */
     private $customOpts = [];
+
+    public function __construct()
+    {
+        $this->userAgent = self::defaultUserAgent();
+    }
 
     public function withCustomConnectionTimeout(int $milliSeconds): ClientOptions
     {
@@ -81,6 +93,13 @@ final class ClientOptions
         return $this;
     }
 
+    public function withCustomUserAgent(string $userAgent): ClientOptions
+    {
+        $this->userAgent = $userAgent;
+
+        return $this;
+    }
+
     public function withCustomCurlOption(int $option, $value): ClientOptions
     {
         $this->customOpts[$option] = $value;
@@ -108,8 +127,21 @@ final class ClientOptions
         return $this->proxyUrl;
     }
 
+    public function userAgent(): string
+    {
+        return $this->userAgent;
+    }
+
     public function customOptions(): array
     {
         return $this->customOpts;
+    }
+
+    /**
+     * @example 'hydra/0.1.0 curl/7.64.0 PHP/7.3.2'
+     */
+    private static function defaultUserAgent(): string
+    {
+        return \sprintf('%s curl/%s PHP/%s', self::HYDRA_USER_AGENT, \curl_version()['version'], PHP_VERSION);
     }
 }

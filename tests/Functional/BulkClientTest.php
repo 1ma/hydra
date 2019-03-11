@@ -101,6 +101,7 @@ final class BulkClientTest extends TestCase
             ->withCustomConnectionTimeout(100)
             ->withCustomResponseTimeout(100)
             ->withCustomDnsCacheTimeout(10)
+            ->withCustomUserAgent('foo/1.2.3')
             ->withCustomCurlOption(CURLOPT_SSL_VERIFYPEER, 0)
             ->withProxy('http://hoverfly:8500');
 
