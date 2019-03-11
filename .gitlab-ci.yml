@@ -1,0 +1,28 @@
+stages:
+  - diagnostics
+  - testing
+
+services:
+  - docker:18.06.1-ce-dind
+
+image:
+  name: docker/compose:1.23.2
+  entrypoint: [""]
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+sanity-check:
+  stage: diagnostics
+  script:
+    - docker info
+    - docker version
+    - docker-compose version
+
+php71:
+  stage: testing
+  script:
+    - docker-compose up -d
+    - docker-compose exec -T runner sh -c "composer install"
+    - docker-compose exec -T runner sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
