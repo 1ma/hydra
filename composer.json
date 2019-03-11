@@ -26,11 +26,13 @@
     "scripts": {
         "test": [
             "docker-compose up -d",
-            "docker-compose exec -T runner sh -c \"php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox\""
+            "docker-compose exec -T php-7.1 sh -c \"php vendor/bin/phpunit --testdox\"",
+            "docker-compose exec -T php-7.2 sh -c \"php vendor/bin/phpunit --testdox\"",
+            "docker-compose exec -T php-7.3 sh -c \"php vendor/bin/phpunit --testdox\""
         ],
         "metrics": [
             "@test",
-            "docker-compose exec -T runner sh -c \"vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .\""
+            "docker-compose exec -T php-7.2 sh -c \"vendor/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .\""
         ],
         "cleanup": "docker-compose down -v"
     },
