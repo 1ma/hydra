@@ -6,7 +6,7 @@ namespace UMA\Hydra;
 
 final class ClientOptions
 {
-    public const HYDRA_USER_AGENT = 'hydra/0.1.0';
+    private const HYDRA_USER_AGENT = 'hydra/0.1.0';
 
     /**
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
@@ -26,17 +26,17 @@ final class ClientOptions
     /**
      * @var int
      */
-    private $connectionTimeout = self::DEFAULT_CONNECTION_TIMEOUT;
+    private $connectionTimeout;
 
     /**
      * @var int
      */
-    private $responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
+    private $responseTimeout;
 
     /**
      * @var int
      */
-    private $dnsCaching = self::DEFAULT_DNS_CACHE_TIMEOUT;
+    private $dnsCaching;
 
     /**
      * @var string|null
@@ -55,6 +55,9 @@ final class ClientOptions
 
     public function __construct()
     {
+        $this->connectionTimeout = self::DEFAULT_CONNECTION_TIMEOUT;
+        $this->responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
+        $this->dnsCaching = self::DEFAULT_DNS_CACHE_TIMEOUT;
         $this->userAgent = self::defaultUserAgent();
     }
 
