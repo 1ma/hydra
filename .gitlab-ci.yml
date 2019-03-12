@@ -24,19 +24,19 @@ php-7.1:
   stage: testing
   script:
     - docker-compose up -d php-7.1
-    - docker-compose exec -T php-7.1 sh -c "composer install"
-    - docker-compose exec -T php-7.1 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+    - docker-compose exec -T php-7.1 sh -c "composer install --no-dev"
+    - docker-compose exec -T php-7.1 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so /usr/local/bin/phpunit --testdox"
 
 php-7.2:
   stage: testing
   script:
     - docker-compose up -d php-7.2
-    - docker-compose exec -T php-7.2 sh -c "composer install"
-    - docker-compose exec -T php-7.2 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+    - docker-compose exec -T php-7.2 sh -c "composer install --no-dev"
+    - docker-compose exec -T php-7.2 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so /usr/local/bin/phpunit --testdox"
 
 php-7.3:
   stage: testing
   script:
     - docker-compose up -d php-7.3
-    - docker-compose exec -T php-7.3 sh -c "composer install"
-    - docker-compose exec -T php-7.3 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox"
+    - docker-compose exec -T php-7.3 sh -c "composer install --no-dev"
+    - docker-compose exec -T php-7.3 sh -c "php -dzend_extension=/usr/lib/php/xdebug.so /usr/local/bin/phpunit --testdox"

@@ -24,7 +24,7 @@ final class ClientTest extends TestCase
      */
     private $client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->callback = new TestingCallback($this);
         $this->client = new Client(new ClientOptions);
