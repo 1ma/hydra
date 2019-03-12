@@ -53,8 +53,9 @@ class DemoCallback implements Hydra\Callback {
 
 $time = \microtime(true);
 
+$client = new Hydra\Client();
 $callback = new DemoCallback();
-$client = new Hydra\BulkClient();
+
 $client->load(new Request('GET', 'https://www.google.com/'), $callback);
 $client->load(new Request('GET', 'https://packagist.org/'), $callback);
 $client->load(new Request('GET', 'https://invalid.doma.in/'), $callback);
@@ -71,19 +72,19 @@ echo \sprintf("\nTotal elapsed time: %s\n", \microtime(true) - $time);
 
 ## Documentation
 
-### BulkClient behaviour
+### Client behaviour
 
-The `BulkClient` accepts a variable number of PSR-7 requests with its `load` method, but does not send them straight away. The
+The `Client` accepts a variable number of PSR-7 requests with its `load` method, but does not send them straight away. The
 second parameter for `load` is the object that will handle the response, and it must implement the `Callback` interface.
 Callbacks need to be implemented by the end user of the library, and the same instance can be reused in different calls to `load`.
 
 Once all requests are loaded, calling `sendAll` will send all them at once, and run their callbacks in the same order that the
 responses are received. `sendAll` itself is blocking (execution won't move on until all requests have been handled) and does
-not return anything. `BulkClient` should never throw an exception, regardless of the outcome of each request.
+not return anything. `Client` should never throw an exception, regardless of the outcome of each request.
 
 ### Callback API
 
-`Callback` objects receive 3 arguments in their `handle` method when the `BulkClient` is finished with their associated request.
+`Callback` objects receive 3 arguments in their `handle` method when the `Client` is finished with their associated request.
 
 The first one is the same PSR-7 request instance that was supplied to `load`, and is useful in order to have the context of which
 response the callback is processing.
@@ -99,7 +100,7 @@ to get information that can be easily derived from the raw statistics, such as t
 
 ### ClientOptions
 
-`BulkClient` can be further customised with an instance of the `ClientOptions` object that accepts at construction time.
+`Client` can be further customised with an instance of the `ClientOptions` object that accepts at construction time.
 
 ```php
 // Time amounts have to be specified in milliseconds.
@@ -109,19 +110,21 @@ $customOptions = (new ClientOptions)
     ->withCustomResponseTimeout(100)
     ->withProxy('http://hoverfly.local:8500');
 
-$customClient = new BulkClient($customOptions);
+$customClient = new Client($customOptions);
 ```
 
 
-## FAQ
+## FAQ and Tips
 
 ### How does Hydra compare to Guzzle?
 
-### Why does Hydra depend on the `nyholm/psr7` package
+### How many concurrent requests can be sent?
 
-### Why Hydra does not implement PSR-18
+### Why does Hydra depend on the `nyholm/psr7` package?
 
-### Tips on writing callbacks
+### Why is Hydra not PSR-18 compatible?
+
+### How to write Callbacks
 
 
 ## Testing

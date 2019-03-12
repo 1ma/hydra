@@ -6,11 +6,11 @@ namespace UMA\Hydra\Tests\Functional;
 
 use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use UMA\Hydra\BulkClient;
+use UMA\Hydra\Client;
 use UMA\Hydra\ClientOptions;
 use UMA\Hydra\Tests\Fixtures\TestingCallback;
 
-final class BulkClientTest extends TestCase
+final class ClientTest extends TestCase
 {
     /**
      * @var TestingCallback
@@ -18,14 +18,14 @@ final class BulkClientTest extends TestCase
     private $callback;
 
     /**
-     * @var BulkClient
+     * @var Client
      */
     private $client;
 
     protected function setUp()
     {
         $this->callback = new TestingCallback($this);
-        $this->client = new BulkClient(new ClientOptions);
+        $this->client = new Client(new ClientOptions);
     }
 
     public function testNoRequests(): void
@@ -105,7 +105,7 @@ final class BulkClientTest extends TestCase
             ->withCustomCurlOption(CURLOPT_SSL_VERIFYPEER, 0)
             ->withProxy('http://hoverfly:8500');
 
-        $customClient = new BulkClient($customOptions);
+        $customClient = new Client($customOptions);
         $customClient->load(new Request('GET', 'http://sleepy:1234?ms=150'), $this->callback);
         $customClient->sendAll();
 
