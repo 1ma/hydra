@@ -10,24 +10,15 @@ use Psr\Http\Message\ResponseInterface;
 use UMA\Hydra;
 
 /**
- * A fixture callback that counts
+ * A fake Callback that throws an exception in order to
+ * test the cleanup mechanism in the Client.
  */
-final class TestingCallback implements Hydra\Callback
+final class TerroristCallback implements Hydra\Callback
 {
     /**
      * @var Assert
      */
     private $assert;
-
-    /**
-     * @var ResponseInterface|null
-     */
-    private $lastResponse;
-
-    /**
-     * @var Hydra\CurlStats
-     */
-    private $lastStats;
 
     /**
      * @var int
@@ -42,23 +33,13 @@ final class TestingCallback implements Hydra\Callback
 
     public function handle(RequestInterface $request, ?ResponseInterface $response, Hydra\CurlStats $stats): void
     {
-        $this->lastResponse = $response;
-        $this->lastStats = $stats;
         $this->counter++;
+
+        throw new TerroristException;
     }
 
     public function expectedCount(int $expected): void
     {
         $this->assert::assertSame($expected, $this->counter);
-    }
-
-    public function lastResponse(): ?ResponseInterface
-    {
-        return $this->lastResponse;
-    }
-
-    public function lastStats(): Hydra\CurlStats
-    {
-        return $this->lastStats;
     }
 }

@@ -8,6 +8,8 @@ use Nyholm\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 use UMA\Hydra\Client;
 use UMA\Hydra\ClientOptions;
+use UMA\Hydra\Tests\Fixtures\TerroristCallback;
+use UMA\Hydra\Tests\Fixtures\TerroristException;
 use UMA\Hydra\Tests\Fixtures\TestingCallback;
 
 final class ClientTest extends TestCase
@@ -111,6 +113,24 @@ final class ClientTest extends TestCase
 
         self::assertSame(CURLE_OPERATION_TIMEDOUT, $this->callback->lastStats()->error_code);
         self::assertNull($this->callback->lastResponse());
+    }
+
+    public function testRecoveryMechanism(): void
+    {
+        $callback = new TerroristCallback($this);
+
+        $this->client->load(new Request('GET', 'http://sleepy:1234?ms=0'), $callback);
+        $this->client->load(new Request('GET', 'http://sleepy:1234?ms=0'), $callback);
+        $this->client->load(new Request('GET', 'http://sleepy:1234?ms=0'), $callback);
+
+        try {
+            $this->client->sendAll();
+
+            self::fail('A TerroristException should have been thrown here');
+        } catch (TerroristException $e) {
+        }
+
+        $callback->expectedCount(1);
     }
 
     private static function getCurrentTimeMs(): int

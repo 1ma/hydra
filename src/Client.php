@@ -68,15 +68,21 @@ final class Client
             $stats = CurlStats::fromMultiInfo($info);
             $entry = $this->backlog[(int) $info['handle']];
 
-            $entry['callback']->handle(
-                $entry['request'],
-                PsrAdapter::psr7fy(
-                    $info['handle'],
-                    $entry['response_headers'],
-                    $stats->http_code
-                ),
-                $stats
-            );
+            try {
+                $entry['callback']->handle(
+                    $entry['request'],
+                    PsrAdapter::psr7fy(
+                        $info['handle'],
+                        $entry['response_headers'],
+                        $stats->http_code
+                    ),
+                    $stats
+                );
+            } catch (\Throwable $exception) {
+                $this->blankState();
+
+                throw $exception;
+            }
 
             $handledReqs++;
         }
