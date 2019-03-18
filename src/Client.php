@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\Internal\CurlAdapter;
 use UMA\Hydra\Internal\PsrAdapter;
 
-final class Client
+final class Client implements ClientInterface
 {
     /**
      * @var resource
