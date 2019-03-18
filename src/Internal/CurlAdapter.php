@@ -23,6 +23,10 @@ final class CurlAdapter
      */
     public static function reusatron($handle, RequestInterface $request, ClientOptions $options, array &$responseHeaders)
     {
+        foreach ($options->customOpts as $option => $value) {
+            \curl_setopt($handle, $option, $value);
+        }
+
         \curl_setopt($handle, CURLOPT_URL, (string) $request->getUri());
         \curl_setopt($handle, CURLOPT_HEADER, false);
         \curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -30,10 +34,6 @@ final class CurlAdapter
         \curl_setopt($handle, CURLOPT_CONNECTTIMEOUT_MS, $options->connectionTimeout);
         \curl_setopt($handle, CURLOPT_TIMEOUT_MS, $options->responseTimeout);
         \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, $options->dnsCacheTtl);
-
-        foreach ($options->customOpts as $option => $value) {
-            \curl_setopt($handle, $option, $value);
-        }
 
         if (null !== $proxyUrl = $options->proxyUrl) {
             \curl_setopt($handle, CURLOPT_PROXY, $proxyUrl);
