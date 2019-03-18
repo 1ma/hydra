@@ -6,7 +6,7 @@ namespace UMA\Hydra;
 
 final class ClientOptions
 {
-    private const HYDRA_USER_AGENT = 'hydra/0.1.0';
+    private const HYDRA_VERSION = '0.1.0';
 
     /**
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
@@ -26,135 +26,49 @@ final class ClientOptions
     /**
      * @var int
      */
-    private $connectionTimeout;
+    public $connectionTimeout;
 
     /**
      * @var int
      */
-    private $responseTimeout;
+    public $responseTimeout;
 
     /**
      * @var int
      */
-    private $dnsCaching;
+    public $dnsCacheTtl;
 
     /**
      * @var string|null
      */
-    private $proxyUrl;
+    public $proxyUrl;
 
     /**
      * @var int|null
      */
-    private $fixedPool;
+    public $fixedPool;
 
     /**
      * @var string
      */
-    private $userAgent;
+    public $userAgent;
 
     /**
      * @var array
      */
-    private $customOpts = [];
+    public $customOpts = [];
 
     public function __construct()
     {
         $this->connectionTimeout = self::DEFAULT_CONNECTION_TIMEOUT;
         $this->responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
-        $this->dnsCaching = self::DEFAULT_DNS_CACHE_TIMEOUT;
+        $this->dnsCacheTtl = self::DEFAULT_DNS_CACHE_TIMEOUT;
         $this->userAgent = self::defaultUserAgent();
     }
 
-    public function withCustomConnectionTimeout(int $milliSeconds): ClientOptions
+    public function poolSize(int $totalRequests): int
     {
-        $this->connectionTimeout = $milliSeconds;
-
-        return $this;
-    }
-
-    public function withCustomResponseTimeout(int $milliSeconds): ClientOptions
-    {
-        $this->responseTimeout = $milliSeconds;
-
-        return $this;
-    }
-
-    public function withCustomDnsCacheTimeout(int $seconds): ClientOptions
-    {
-        $this->dnsCaching = $seconds;
-
-        return $this;
-    }
-
-    public function withDisabledDnsCaching(): ClientOptions
-    {
-        $this->dnsCaching = 0;
-
-        return $this;
-    }
-
-    public function withProxy(string $proxyUrl): ClientOptions
-    {
-        $this->proxyUrl = $proxyUrl;
-
-        return $this;
-    }
-
-    public function withFixedPool(int $poolSize): ClientOptions
-    {
-        $this->fixedPool = $poolSize;
-
-        return $this;
-    }
-
-    public function withCustomUserAgent(string $userAgent): ClientOptions
-    {
-        $this->userAgent = $userAgent;
-
-        return $this;
-    }
-
-    public function withCustomCurlOption(int $option, $value): ClientOptions
-    {
-        $this->customOpts[$option] = $value;
-
-        return $this;
-    }
-
-    public function connectionTimeout(): int
-    {
-        return $this->connectionTimeout;
-    }
-
-    public function responseTimeout(): int
-    {
-        return $this->responseTimeout;
-    }
-
-    public function dnsCacheTimeout(): int
-    {
-        return $this->dnsCaching;
-    }
-
-    public function proxyUrl(): ?string
-    {
-        return $this->proxyUrl;
-    }
-
-    public function poolSize(int $requests): int
-    {
-        return \max(1, $this->fixedPool ?? $requests);
-    }
-
-    public function userAgent(): string
-    {
-        return $this->userAgent;
-    }
-
-    public function customOptions(): array
-    {
-        return $this->customOpts;
+        return \max(1, $this->fixedPool ?? $totalRequests);
     }
 
     /**
@@ -162,6 +76,6 @@ final class ClientOptions
      */
     private static function defaultUserAgent(): string
     {
-        return \sprintf('%s curl/%s PHP/%s', self::HYDRA_USER_AGENT, \curl_version()['version'], PHP_VERSION);
+        return \sprintf('hydra/%s curl/%s PHP/%s', self::HYDRA_VERSION, \curl_version()['version'], PHP_VERSION);
     }
 }

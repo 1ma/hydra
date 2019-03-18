@@ -26,16 +26,16 @@ final class CurlAdapter
         \curl_setopt($handle, CURLOPT_URL, (string) $request->getUri());
         \curl_setopt($handle, CURLOPT_HEADER, false);
         \curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        \curl_setopt($handle, CURLOPT_USERAGENT, $options->userAgent());
-        \curl_setopt($handle, CURLOPT_CONNECTTIMEOUT_MS, $options->connectionTimeout());
-        \curl_setopt($handle, CURLOPT_TIMEOUT_MS, $options->responseTimeout());
-        \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, $options->dnsCacheTimeout());
+        \curl_setopt($handle, CURLOPT_USERAGENT, $options->userAgent);
+        \curl_setopt($handle, CURLOPT_CONNECTTIMEOUT_MS, $options->connectionTimeout);
+        \curl_setopt($handle, CURLOPT_TIMEOUT_MS, $options->responseTimeout);
+        \curl_setopt($handle, CURLOPT_DNS_CACHE_TIMEOUT, $options->dnsCacheTtl);
 
-        foreach ($options->customOptions() as $option => $value) {
+        foreach ($options->customOpts as $option => $value) {
             \curl_setopt($handle, $option, $value);
         }
 
-        if (null !== $proxyUrl = $options->proxyUrl()) {
+        if (null !== $proxyUrl = $options->proxyUrl) {
             \curl_setopt($handle, CURLOPT_PROXY, $proxyUrl);
         }
 

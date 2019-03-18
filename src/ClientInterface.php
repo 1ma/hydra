@@ -10,5 +10,5 @@ interface ClientInterface
 {
     public function load(RequestInterface $request, Callback $callback): void;
 
-    public function sendAll(): void;
+    public function send(): void;
 }

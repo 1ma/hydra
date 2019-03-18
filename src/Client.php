@@ -37,7 +37,7 @@ final class Client implements ClientInterface
         $this->backlog[] = [$request, $callback];
     }
 
-    public function sendAll(): void
+    public function send(): void
     {
         $handledRequests = 0;
         $totalRequests = \count($this->backlog);
@@ -79,8 +79,8 @@ final class Client implements ClientInterface
             if (!empty($this->backlog)) {
                 [$request, $callback] = \array_shift($this->backlog);
 
-                $this->pool[$id]['callback'] = $callback;
                 $this->pool[$id]['request'] = $request;
+                $this->pool[$id]['callback'] = $callback;
                 $this->pool[$id]['response_headers'] = [];
                 $this->pool[$id]['handle'] = CurlAdapter::reusatron(
                     $this->pool[$id]['handle'],
@@ -113,9 +113,8 @@ final class Client implements ClientInterface
             [$request, $callback] = \array_shift($this->backlog);
 
             $connection = [
-                'callback' => $callback,
                 'request' => $request,
-                'handle' => null,
+                'callback' => $callback,
                 'response_headers' => []
             ];
 

@@ -32,7 +32,7 @@ final class ClientTest extends TestCase
 
     public function testNoRequests(): void
     {
-        $this->client->sendAll();
+        $this->client->send();
 
         self::assertTrue(true);
     }
@@ -43,7 +43,7 @@ final class ClientTest extends TestCase
 
         $this->callback->expectedCount(0);
 
-        $this->client->sendAll();
+        $this->client->send();
 
         $this->callback->expectedCount(1);
     }
@@ -74,7 +74,7 @@ final class ClientTest extends TestCase
         $this->callback->expectedCount(0);
 
         $start = self::getCurrentTimeMs();
-        $this->client->sendAll();
+        $this->client->send();
         $end = self::getCurrentTimeMs();
 
         $this->callback->expectedCount(20);
@@ -86,7 +86,7 @@ final class ClientTest extends TestCase
     {
         $this->client->load(new Request('POST', 'http://sleepy:1234?ms=50', ['Content-Type' => 'application/json'], '{"foo": "bar"}'), $this->callback);
         $this->client->load(new Request('POST', 'http://sleepy:1234?ms=50', ['Content-Type' => 'application/json'], '{"foo": "bar"}'), $this->callback);
-        $this->client->sendAll();
+        $this->client->send();
 
         $this->callback->expectedCount(2);
 
@@ -98,20 +98,19 @@ final class ClientTest extends TestCase
 
     public function testProxyAndResponseTimeout(): void
     {
-        $customOptions = (new ClientOptions)
-            ->withDisabledDnsCaching()
-            ->withCustomConnectionTimeout(100)
-            ->withCustomResponseTimeout(100)
-            ->withCustomDnsCacheTimeout(10)
-            ->withCustomUserAgent('foo/1.2.3')
-            ->withCustomCurlOption(CURLOPT_SSL_VERIFYPEER, 0)
-            ->withProxy('http://hoverfly:8500')
-            ->withFixedPool(1);
+        $customOptions = new ClientOptions();
+        $customOptions->dnsCacheTtl = 0;
+        $customOptions->connectionTimeout = 100;
+        $customOptions->responseTimeout = 100;
+        $customOptions->userAgent = 'foo/1.2.3';
+        $customOptions->customOpts = [CURLOPT_VERBOSE => false];
+        $customOptions->proxyUrl = 'http://hoverfly:8500';
+        $customOptions->fixedPool = 1;
 
         $customClient = new Client($customOptions);
         $customClient->load(new Request('GET', 'http://sleepy:1234?ms=150'), $this->callback);
         $customClient->load(new Request('GET', 'http://sleepy:1234?ms=150'), $this->callback);
-        $customClient->sendAll();
+        $customClient->send();
 
         self::assertSame(CURLE_OPERATION_TIMEDOUT, $this->callback->lastStats()->error_code);
         self::assertNull($this->callback->lastResponse());
@@ -126,7 +125,7 @@ final class ClientTest extends TestCase
         $this->client->load(new Request('GET', 'http://sleepy:1234?ms=0'), $callback);
 
         try {
-            $this->client->sendAll();
+            $this->client->send();
 
             self::fail('A TerroristException should have been thrown here');
         } catch (TerroristException $e) {
