@@ -44,6 +44,11 @@ final class ClientOptions
     private $proxyUrl;
 
     /**
+     * @var int|null
+     */
+    private $fixedPool;
+
+    /**
      * @var string
      */
     private $userAgent;
@@ -96,6 +101,13 @@ final class ClientOptions
         return $this;
     }
 
+    public function withFixedPool(int $poolSize): ClientOptions
+    {
+        $this->fixedPool = $poolSize;
+
+        return $this;
+    }
+
     public function withCustomUserAgent(string $userAgent): ClientOptions
     {
         $this->userAgent = $userAgent;
@@ -128,6 +140,11 @@ final class ClientOptions
     public function proxyUrl(): ?string
     {
         return $this->proxyUrl;
+    }
+
+    public function poolSize(int $requests): int
+    {
+        return \max(1, $this->fixedPool ?? $requests);
     }
 
     public function userAgent(): string

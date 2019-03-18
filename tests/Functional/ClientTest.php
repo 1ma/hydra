@@ -105,9 +105,11 @@ final class ClientTest extends TestCase
             ->withCustomDnsCacheTimeout(10)
             ->withCustomUserAgent('foo/1.2.3')
             ->withCustomCurlOption(CURLOPT_SSL_VERIFYPEER, 0)
-            ->withProxy('http://hoverfly:8500');
+            ->withProxy('http://hoverfly:8500')
+            ->withFixedPool(1);
 
         $customClient = new Client($customOptions);
+        $customClient->load(new Request('GET', 'http://sleepy:1234?ms=150'), $this->callback);
         $customClient->load(new Request('GET', 'http://sleepy:1234?ms=150'), $this->callback);
         $customClient->sendAll();
 

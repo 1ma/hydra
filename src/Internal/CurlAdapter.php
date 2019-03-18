@@ -9,6 +9,11 @@ use UMA\Hydra\ClientOptions;
 
 final class CurlAdapter
 {
+    public static function curlify(RequestInterface $request, ClientOptions $options, array &$responseHeaders)
+    {
+        return self::reusatron(\curl_init(), $request, $options, $responseHeaders);
+    }
+
     /**
      * Returns a cURL handle functionally equivalent to
      * the received Psr7 HTTP request, combined with the
@@ -16,10 +21,8 @@ final class CurlAdapter
      *
      * @return resource
      */
-    public static function curlify(RequestInterface $request, ClientOptions $options, array &$responseHeaders)
+    public static function reusatron($handle, RequestInterface $request, ClientOptions $options, array &$responseHeaders)
     {
-        $handle = \curl_init();
-
         \curl_setopt($handle, CURLOPT_URL, (string) $request->getUri());
         \curl_setopt($handle, CURLOPT_HEADER, false);
         \curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
