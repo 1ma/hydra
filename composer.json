@@ -25,9 +25,9 @@
     "scripts": {
         "test": [
             "docker-compose up -d",
-            "docker-compose exec -T php-7.1 sh -c \"php vendor/bin/phpunit --testdox\"",
-            "docker-compose exec -T php-7.2 sh -c \"php vendor/bin/phpunit --testdox\"",
-            "docker-compose exec -T php-7.3 sh -c \"php -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox\""
+            "docker-compose exec -T php-7.1 sh -c \"php -dzend.assertions=1 -dassert.exception=1 vendor/bin/phpunit --testdox\"",
+            "docker-compose exec -T php-7.2 sh -c \"php -dzend.assertions=1 -dassert.exception=1 vendor/bin/phpunit --testdox\"",
+            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox\""
         ],
         "metrics": [
             "@test",

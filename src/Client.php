@@ -36,7 +36,7 @@ final class Client implements ClientInterface
     public function load(RequestInterface $request, Callback $callback): void
     {
         $connection = new Connection();
-        $connection->request = $connection;
+        $connection->request = $request;
         $connection->callback = $callback;
 
         $this->backlog[] = $connection;
@@ -85,7 +85,7 @@ final class Client implements ClientInterface
     {
         $maxPoolSize = $this->options->poolSize(\count($this->backlog));
 
-        while (!empty($this->backlog) && \count($this->pool) < $maxPoolSize) {
+        while (!empty($this->backlog) && $this->pool->size() < $maxPoolSize) {
             $this->pool->add(\array_shift($this->backlog));
         }
     }
