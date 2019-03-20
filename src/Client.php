@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace UMA\Hydra;
 
 use Psr\Http\Message\RequestInterface;
-use UMA\Hydra\Internal\CurlAdapter;
+use UMA\Hydra\Internal\Connection;
+use UMA\Hydra\Internal\Pool;
 use UMA\Hydra\Internal\PsrAdapter;
 
 final class Client implements ClientInterface
 {
     /**
-     * @var array
+     * @var Connection[]
      */
     private $backlog;
 
@@ -28,102 +29,64 @@ final class Client implements ClientInterface
     public function __construct(ClientOptions $options = null)
     {
         $this->backlog = [];
-        $this->pool = [];
         $this->options = $options ?? new ClientOptions;
+        $this->pool = new Pool($this->options);
     }
 
     public function load(RequestInterface $request, Callback $callback): void
     {
-        $this->backlog[] = [$request, $callback];
+        $connection = new Connection();
+        $connection->request = $connection;
+        $connection->callback = $callback;
+
+        $this->backlog[] = $connection;
     }
 
     public function send(): void
     {
-        $handledRequests = 0;
-        $totalRequests = \count($this->backlog);
+        $jobs = 0;
+        $totalJobs = \count($this->backlog);
 
-        $multi = $this->initPool();
+        $this->initPool();
 
-        while ($handledRequests < $totalRequests) {
-            \curl_multi_exec($multi, $active);
-            \curl_multi_select($multi);
-            $info = \curl_multi_info_read($multi);
-
-            if (false === $info) {
-                continue;
-            }
-
-            $id = (int) $info['handle'];
-            $stats = CurlStats::fromMultiInfo($info);
-
-            \curl_multi_remove_handle($multi, $this->pool[$id]['handle']);
+        while ($jobs < $totalJobs) {
+            $connection = $this->pool->pick();
 
             try {
-                $this->pool[$id]['callback']->handle(
-                    $this->pool[$id]['request'],
+                $connection->callback->handle(
+                    $connection->request,
                     PsrAdapter::psr7fy(
-                        $info['handle'],
-                        $this->pool[$id]['response_headers'],
-                        $stats->http_code
+                        $connection->handle,
+                        $connection->responseHeaders,
+                        $connection->stats->http_code
                     ),
-                    $stats
+                    $connection->stats
                 );
             } catch (\Throwable $exception) {
-                $this->backlog = [];
-                $this->pool = [];
-                \curl_multi_close($multi);
+                $this->pool->shutdown();
 
                 throw $exception;
             }
 
             if (!empty($this->backlog)) {
-                [$request, $callback] = \array_shift($this->backlog);
-
-                $this->pool[$id]['request'] = $request;
-                $this->pool[$id]['callback'] = $callback;
-                $this->pool[$id]['response_headers'] = [];
-                $this->pool[$id]['handle'] = CurlAdapter::reusatron(
-                    $this->pool[$id]['handle'],
-                    $request,
-                    $this->options,
-                    $this->pool[$id]['response_headers']
-                );
-
-                \curl_multi_add_handle($multi, $this->pool[$id]['handle']);
-            } else {
-                \curl_close($this->pool[$id]['handle']);
+                $this->pool->reuse($connection, \array_shift($this->backlog));
             }
 
-            $handledRequests++;
+            $jobs++;
         }
 
-        $this->pool = [];
-        \curl_multi_close($multi);
+        $this->pool->shutdown();
     }
 
     /**
      * @return resource
      */
-    private function initPool()
+    private function initPool(): void
     {
-        $multi = curl_multi_init();
         $maxPoolSize = $this->options->poolSize(\count($this->backlog));
 
         while (!empty($this->backlog) && \count($this->pool) < $maxPoolSize) {
-            [$request, $callback] = \array_shift($this->backlog);
-
-            $connection = [
-                'request' => $request,
-                'callback' => $callback,
-                'response_headers' => []
-            ];
-
-            $connection['handle'] = CurlAdapter::curlify($request, $this->options, $connection['response_headers']);
-            $this->pool[(int) $connection['handle']] = $connection;
-
-            \curl_multi_add_handle($multi, $connection['handle']);
+            $this->pool->add(\array_shift($this->backlog));
         }
-
-        return $multi;
     }
 }
