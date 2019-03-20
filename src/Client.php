@@ -77,6 +77,8 @@ final class Client implements ClientInterface
                     $connection->stats
                 );
             } catch (\Throwable $exception) {
+                $this->backlog = [];
+                $this->jobs = 0;
                 $this->pool->shutdown();
 
                 throw $exception;
