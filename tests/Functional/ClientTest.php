@@ -39,7 +39,7 @@ final class ClientTest extends TestCase
 
     public function testOneSuccessfulRequest(): void
     {
-        $this->client->load(new Request('GET', 'http://sleepy:1234?ms=0'), $this->callback);
+        $this->client->load(new Request('GET', 'http://sleepy:1234'), $this->callback);
 
         $this->callback->expectedCount(0);
 
@@ -114,6 +114,13 @@ final class ClientTest extends TestCase
 
         self::assertSame(CURLE_OPERATION_TIMEDOUT, $this->callback->lastStats()->error_code);
         self::assertNull($this->callback->lastResponse());
+
+        $customClient->load(new Request('GET', 'http://sleepy:1234'), $this->callback);
+        $customClient->load(new Request('GET', 'http://sleepy:1234'), $this->callback);
+        $customClient->send();
+
+        self::assertSame(CURLE_OK, $this->callback->lastStats()->error_code);
+        self::assertNotNull($this->callback->lastResponse());
     }
 
     public function testRecoveryMechanism(): void

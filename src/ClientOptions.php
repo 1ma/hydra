@@ -39,12 +39,12 @@ final class ClientOptions
     public $dnsCacheTtl;
 
     /**
-     * @var string|null
+     * @var string
      */
     public $proxyUrl;
 
     /**
-     * @var int|null
+     * @var int
      */
     public $fixedPool;
 
@@ -64,11 +64,6 @@ final class ClientOptions
         $this->responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
         $this->dnsCacheTtl = self::DEFAULT_DNS_CACHE_TIMEOUT;
         $this->userAgent = self::defaultUserAgent();
-    }
-
-    public function poolSize(int $totalRequests): int
-    {
-        return \max(1, $this->fixedPool ?? $totalRequests);
     }
 
     /**

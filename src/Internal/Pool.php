@@ -64,14 +64,14 @@ final class Pool
         return $this->pool[$id];
     }
 
-    public function reuse(Connection $oldConnection, Connection $newConnection): void
+    public function recycle(Connection $old, Connection $new): void
     {
         \assert($this->active());
 
-        $id = (int) $oldConnection->handle;
+        $id = (int) $old->handle;
 
-        $this->pool[$id]->request = $newConnection->request;
-        $this->pool[$id]->callback = $newConnection->callback;
+        $this->pool[$id]->request = $new->request;
+        $this->pool[$id]->callback = $new->callback;
         $this->pool[$id]->responseHeaders = [];
 
         $this->pool[$id]->handle = CurlAdapter::reusatron(

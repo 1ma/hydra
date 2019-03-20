@@ -17,39 +17,53 @@ final class Client implements ClientInterface
     private $backlog;
 
     /**
-     * @var array
+     * @var int
      */
-    private $pool;
+    private $jobs;
 
     /**
      * @var ClientOptions
      */
     private $options;
 
+    /**
+     * @var Pool
+     */
+    private $pool;
+
     public function __construct(ClientOptions $options = null)
     {
         $this->backlog = [];
+        $this->jobs = 0;
         $this->options = $options ?? new ClientOptions;
         $this->pool = new Pool($this->options);
     }
 
     public function load(RequestInterface $request, Callback $callback): void
     {
+        $this->jobs++;
+
+        if (!$this->pool->active()) {
+            $this->pool = new Pool($this->options);
+        }
+
         $connection = new Connection();
         $connection->request = $request;
         $connection->callback = $callback;
 
-        $this->backlog[] = $connection;
+        if ($this->fullPool()) {
+            $this->backlog[] = $connection;
+
+            return;
+        }
+
+        $this->pool->add($connection);
     }
 
     public function send(): void
     {
-        $jobs = 0;
-        $totalJobs = \count($this->backlog);
-
-        $this->initPool();
-
-        while ($jobs < $totalJobs) {
+        $done = 0;
+        while ($done < $this->jobs) {
             $connection = $this->pool->pick();
 
             try {
@@ -69,24 +83,19 @@ final class Client implements ClientInterface
             }
 
             if (!empty($this->backlog)) {
-                $this->pool->reuse($connection, \array_shift($this->backlog));
+                $this->pool->recycle($connection, \array_shift($this->backlog));
             }
 
-            $jobs++;
+            $done++;
         }
 
+        $this->jobs = 0;
         $this->pool->shutdown();
     }
 
-    /**
-     * @return resource
-     */
-    private function initPool(): void
+    private function fullPool(): bool
     {
-        $maxPoolSize = $this->options->poolSize(\count($this->backlog));
-
-        while (!empty($this->backlog) && $this->pool->size() < $maxPoolSize) {
-            $this->pool->add(\array_shift($this->backlog));
-        }
+        return $this->options->fixedPool !== null
+            && $this->options->fixedPool === $this->pool->size();
     }
 }
