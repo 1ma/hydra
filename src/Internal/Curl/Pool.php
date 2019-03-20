@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UMA\Hydra\Internal;
+namespace UMA\Hydra\Internal\Curl;
 
 use UMA\Hydra\ClientOptions;
 use UMA\Hydra\CurlStats;
+use UMA\Hydra\Internal\Job;
 
 final class Pool
 {
@@ -39,7 +40,7 @@ final class Pool
             return false;
         }
 
-        $job->handle = CurlAdapter::curlify(
+        $job->handle = Adapter::curlify(
             $job->request,
             $this->options,
             $job->responseHeaders
@@ -80,7 +81,7 @@ final class Pool
         $this->pool[$id]->callback = $new->callback;
         $this->pool[$id]->responseHeaders = [];
 
-        $this->pool[$id]->handle = CurlAdapter::reusatron(
+        $this->pool[$id]->handle = Adapter::reusatron(
             $this->pool[$id]->handle,
             $this->pool[$id]->request,
             $this->options,

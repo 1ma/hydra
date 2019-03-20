@@ -6,8 +6,8 @@ namespace UMA\Hydra;
 
 use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\Internal\Job;
-use UMA\Hydra\Internal\Pool;
-use UMA\Hydra\Internal\PsrAdapter;
+use UMA\Hydra\Internal\Curl;
+use UMA\Hydra\Internal\Psr;
 
 final class Client implements ClientInterface
 {
@@ -27,7 +27,7 @@ final class Client implements ClientInterface
     private $options;
 
     /**
-     * @var Pool
+     * @var Curl\Pool
      */
     private $pool;
 
@@ -36,7 +36,7 @@ final class Client implements ClientInterface
         $this->backlog = [];
         $this->jobs = 0;
         $this->options = $options ?? new ClientOptions;
-        $this->pool = new Pool($this->options);
+        $this->pool = new Curl\Pool($this->options);
     }
 
     public function load(RequestInterface $request, Callback $callback): void
@@ -44,7 +44,7 @@ final class Client implements ClientInterface
         $this->jobs++;
 
         if (!$this->pool->active()) {
-            $this->pool = new Pool($this->options);
+            $this->pool = new Curl\Pool($this->options);
         }
 
         $job = new Job();
@@ -65,7 +65,7 @@ final class Client implements ClientInterface
             try {
                 $job->callback->handle(
                     $job->request,
-                    PsrAdapter::psr7fy(
+                    Psr\Adapter::psr7fy(
                         $job->handle,
                         $job->responseHeaders,
                         $job->stats->http_code

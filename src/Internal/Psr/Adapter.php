@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UMA\Hydra\Internal;
+namespace UMA\Hydra\Internal\Psr;
 
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 
-final class PsrAdapter
+final class Adapter
 {
     /**
      * Returns an instance of a Psr7 ResponseInterface

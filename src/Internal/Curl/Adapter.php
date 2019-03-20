@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UMA\Hydra\Internal;
+namespace UMA\Hydra\Internal\Curl;
 
 use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\ClientOptions;
 
-final class CurlAdapter
+final class Adapter
 {
     public static function curlify(RequestInterface $request, ClientOptions $options, array &$responseHeaders)
     {
