@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace UMA\Hydra;
 
 use Psr\Http\Message\RequestInterface;
-use UMA\Hydra\Internal\Connection;
+use UMA\Hydra\Internal\Job;
 use UMA\Hydra\Internal\Pool;
 use UMA\Hydra\Internal\PsrAdapter;
 
 final class Client implements ClientInterface
 {
     /**
-     * @var Connection[]
+     * @var Job[]
      */
     private $backlog;
 
@@ -47,30 +47,30 @@ final class Client implements ClientInterface
             $this->pool = new Pool($this->options);
         }
 
-        $connection = new Connection();
-        $connection->request = $request;
-        $connection->callback = $callback;
+        $job = new Job();
+        $job->request = $request;
+        $job->callback = $callback;
 
-        if (!$this->pool->add($connection)) {
-            $this->backlog[] = $connection;
+        if (!$this->pool->add($job)) {
+            $this->backlog[] = $job;
         }
     }
 
     public function send(): void
     {
-        $done = 0;
-        while ($done < $this->jobs) {
-            $connection = $this->pool->pick();
+        $completed = 0;
+        while ($completed < $this->jobs) {
+            $job = $this->pool->pick();
 
             try {
-                $connection->callback->handle(
-                    $connection->request,
+                $job->callback->handle(
+                    $job->request,
                     PsrAdapter::psr7fy(
-                        $connection->handle,
-                        $connection->responseHeaders,
-                        $connection->stats->http_code
+                        $job->handle,
+                        $job->responseHeaders,
+                        $job->stats->http_code
                     ),
-                    $connection->stats
+                    $job->stats
                 );
             } catch (\Throwable $exception) {
                 $this->backlog = [];
@@ -81,10 +81,10 @@ final class Client implements ClientInterface
             }
 
             if (!empty($this->backlog)) {
-                $this->pool->recycle($connection, \array_shift($this->backlog));
+                $this->pool->recycle($job, \array_shift($this->backlog));
             }
 
-            $done++;
+            $completed++;
         }
 
         \assert(empty($this->backlog));

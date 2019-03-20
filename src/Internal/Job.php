@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\Callback;
 use UMA\Hydra\CurlStats;
 
-final class Connection
+final class Job
 {
     /**
      * @var RequestInterface

@@ -10,7 +10,7 @@ use UMA\Hydra\CurlStats;
 final class Pool
 {
     /**
-     * @var Connection[]
+     * @var Job[]
      */
     private $pool;
 
@@ -31,7 +31,7 @@ final class Pool
         $this->options = $options;
     }
 
-    public function add(Connection $connection): bool
+    public function add(Job $job): bool
     {
         \assert($this->active());
 
@@ -39,20 +39,20 @@ final class Pool
             return false;
         }
 
-        $connection->handle = CurlAdapter::curlify(
-            $connection->request,
+        $job->handle = CurlAdapter::curlify(
+            $job->request,
             $this->options,
-            $connection->responseHeaders
+            $job->responseHeaders
         );
 
-        $this->pool[(int) $connection->handle] = $connection;
+        $this->pool[(int) $job->handle] = $job;
 
-        \curl_multi_add_handle($this->multi, $connection->handle);
+        \curl_multi_add_handle($this->multi, $job->handle);
 
         return true;
     }
 
-    public function pick(): Connection
+    public function pick(): Job
     {
         \assert($this->active());
 
@@ -70,7 +70,7 @@ final class Pool
         return $this->pool[$id];
     }
 
-    public function recycle(Connection $old, Connection $new): void
+    public function recycle(Job $old, Job $new): void
     {
         \assert($this->active());
 
@@ -94,8 +94,8 @@ final class Pool
     {
         \assert($this->active());
 
-        foreach ($this->pool as $connection) {
-            \curl_close($connection->handle);
+        foreach ($this->pool as $job) {
+            \curl_close($job->handle);
         }
 
         $this->pool = [];
