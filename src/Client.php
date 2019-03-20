@@ -51,13 +51,9 @@ final class Client implements ClientInterface
         $connection->request = $request;
         $connection->callback = $callback;
 
-        if ($this->fullPool()) {
+        if (!$this->pool->add($connection)) {
             $this->backlog[] = $connection;
-
-            return;
         }
-
-        $this->pool->add($connection);
     }
 
     public function send(): void
@@ -91,13 +87,9 @@ final class Client implements ClientInterface
             $done++;
         }
 
+        \assert(empty($this->backlog));
+
         $this->jobs = 0;
         $this->pool->shutdown();
-    }
-
-    private function fullPool(): bool
-    {
-        return $this->options->fixedPool !== null
-            && $this->options->fixedPool === $this->pool->size();
     }
 }

@@ -31,9 +31,13 @@ final class Pool
         $this->options = $options;
     }
 
-    public function add(Connection $connection): void
+    public function add(Connection $connection): bool
     {
         \assert($this->active());
+
+        if ($this->full()) {
+            return false;
+        }
 
         $connection->handle = CurlAdapter::curlify(
             $connection->request,
@@ -41,9 +45,11 @@ final class Pool
             $connection->responseHeaders
         );
 
+        $this->pool[(int) $connection->handle] = $connection;
+
         \curl_multi_add_handle($this->multi, $connection->handle);
 
-        $this->pool[(int) $connection->handle] = $connection;
+        return true;
     }
 
     public function pick(): Connection
@@ -99,13 +105,14 @@ final class Pool
         $this->multi = null;
     }
 
-    public function size(): int
-    {
-        return \count($this->pool);
-    }
-
     public function active(): bool
     {
         return null !== $this->multi;
+    }
+
+    private function full(): bool
+    {
+        return $this->options->fixedPool !== null
+            && $this->options->fixedPool === \count($this->pool);
     }
 }
