@@ -9,9 +9,6 @@
         "nyholm/psr7": "^1.1",
         "psr/http-message": "^1.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": "^7.5"
-    },
     "autoload": {
         "psr-4": {
             "UMA\\Hydra\\": "src/"
@@ -25,9 +22,7 @@
     "scripts": {
         "test": [
             "docker-compose up -d",
-            "docker-compose exec -T php-7.1 sh -c \"php -dzend.assertions=1 -dassert.exception=1 vendor/bin/phpunit --testdox\"",
-            "docker-compose exec -T php-7.2 sh -c \"php -dzend.assertions=1 -dassert.exception=1 vendor/bin/phpunit --testdox\"",
-            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dzend_extension=/usr/lib/php/xdebug.so vendor/bin/phpunit --testdox\""
+            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dextension=/usr/lib/php/pcov.so /usr/local/bin/phpunit --testdox\""
         ],
         "metrics": [
             "@test",
