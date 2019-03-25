@@ -8,6 +8,9 @@ use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\Callback;
 use UMA\Hydra\CurlStats;
 
+/**
+ * @internal This class is not part of the package API. Don't use it directly.
+ */
 final class Job
 {
     /**

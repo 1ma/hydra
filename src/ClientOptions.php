@@ -9,44 +9,40 @@ final class ClientOptions
     private const HYDRA_VERSION = '0.1.0';
 
     /**
+     * @var int
+     *
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_CONNECTTIMEOUT_MS.html
      */
-    private const DEFAULT_CONNECTION_TIMEOUT = 300000;
+    public $connectionTimeout = 300000;
 
     /**
+     * @var int
+     *
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_TIMEOUT_MS.html
      */
-    private const DEFAULT_RESPONSE_TIMEOUT = 0;
+    public $responseTimeout = 0;
 
     /**
+     * @var int
+     *
      * @see https://curl.haxx.se/libcurl/c/CURLOPT_DNS_CACHE_TIMEOUT.html
      */
-    private const DEFAULT_DNS_CACHE_TIMEOUT = 60;
+    public $dnsCacheTtl = 60;
 
     /**
-     * @var int
+     * @var bool
      */
-    public $connectionTimeout;
+    public $persistentPool = false;
 
     /**
-     * @var int
-     */
-    public $responseTimeout;
-
-    /**
-     * @var int
-     */
-    public $dnsCacheTtl;
-
-    /**
-     * @var string
-     */
-    public $proxyUrl;
-
-    /**
-     * @var int
+     * @var int|null
      */
     public $fixedPool;
+
+    /**
+     * @var string|null
+     */
+    public $proxyUrl;
 
     /**
      * @var string
@@ -60,9 +56,6 @@ final class ClientOptions
 
     public function __construct()
     {
-        $this->connectionTimeout = self::DEFAULT_CONNECTION_TIMEOUT;
-        $this->responseTimeout = self::DEFAULT_RESPONSE_TIMEOUT;
-        $this->dnsCacheTtl = self::DEFAULT_DNS_CACHE_TIMEOUT;
         $this->userAgent = self::defaultUserAgent();
     }
 

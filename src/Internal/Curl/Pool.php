@@ -8,6 +8,9 @@ use UMA\Hydra\ClientOptions;
 use UMA\Hydra\CurlStats;
 use UMA\Hydra\Internal\Job;
 
+/**
+ * @internal This class is not part of the package API. Don't use it directly.
+ */
 final class Pool
 {
     /**

@@ -7,6 +7,9 @@ namespace UMA\Hydra\Internal\Curl;
 use Psr\Http\Message\RequestInterface;
 use UMA\Hydra\ClientOptions;
 
+/**
+ * @internal This class is not part of the package API. Don't use it directly.
+ */
 final class Adapter
 {
     public static function curlify(RequestInterface $request, ClientOptions $options, array &$responseHeaders)
@@ -68,13 +71,16 @@ final class Adapter
         return $handle;
     }
 
+    /**
+     * @example
+     *  ['Host' => ['example.com'], 'Accept' => ['text/plain', 'text/html']
+     *      =>
+     *  ['Host: example.com', 'Accept: text/plain,text/html']
+     */
     private static function curlHeaders(RequestInterface $request): array
     {
-        $headers = [];
-        foreach ($request->getHeaders() as $name => $values) {
-            $headers[] = \sprintf('%s: %s', $name, \implode(',', $values));
-        }
-
-        return $headers;
+        return \array_map(function(string $name, array $values): string {
+            return \sprintf('%s: %s', $name, \implode(',', $values));
+        }, \array_keys($request->getHeaders()), $request->getHeaders());
     }
 }
