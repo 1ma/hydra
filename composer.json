@@ -22,11 +22,15 @@
     "scripts": {
         "test": [
             "docker-compose up -d",
-            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dextension=/usr/lib/php/pcov.so /usr/local/bin/phpunit --testdox\""
+            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --log-junit build/phpunit/junit.xml --testdox\""
+        ],
+        "coverage": [
+            "docker-compose up -d",
+            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dextension=/usr/lib/php/pcov.so /usr/local/bin/phpunit --coverage-html build/phpunit --coverage-text --testdox\""
         ],
         "metrics": [
             "@test",
-            "docker-compose exec -T php-7.3 sh -c \"phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .\""
+            "docker-compose exec -T php-7.3 sh -c \"/usr/local/bin/phpmetrics --junit=./build/phpunit/junit.xml --report-html=./build/phpmetrics .\""
         ],
         "cleanup": "docker-compose down -v"
     },
