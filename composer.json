@@ -26,7 +26,7 @@
         ],
         "coverage": [
             "docker-compose up -d",
-            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dextension=/usr/lib/php/pcov.so /usr/local/bin/phpunit --coverage-html build/phpunit --coverage-text --testdox\""
+            "docker-compose exec -T php-7.3 sh -c \"php -dzend.assertions=1 -dassert.exception=1 -dextension=/usr/lib/php/pcov.so /usr/local/bin/phpunit --colors=auto --coverage-html build/phpunit --coverage-text --testdox\""
         ],
         "metrics": [
             "@test",
