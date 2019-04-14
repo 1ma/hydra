@@ -193,7 +193,7 @@ final class CurlStats
      */
     public function waitingTime(): float
     {
-        return $this->starttransfer_time - $this->pretransfer_time;
+        return \max(0.0, $this->starttransfer_time - $this->pretransfer_time);
     }
 
     /**
