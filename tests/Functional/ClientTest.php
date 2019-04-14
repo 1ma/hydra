@@ -92,8 +92,8 @@ final class ClientTest extends TestCase
 
         $stats = $this->callback->lastStats();
         self::assertGreaterThan(0, $stats->receivingTime());
-        self::assertGreaterThan(0, $stats->timeToFirstByte());
-        self::assertLessThan(0.1, $stats->timeToFirstByte());
+        self::assertGreaterThan(0, $stats->waitingTime());
+        self::assertLessThan(0.1, $stats->waitingTime());
     }
 
     public function testProxyAndResponseTimeout(): void

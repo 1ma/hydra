@@ -187,8 +187,11 @@ final class CurlStats
     /**
      * The elapsed time (in seconds) from the moment cURL finished sending
      * the request to the server until it received the first byte of the response.
+     *
+     * This time includes the remote server processing time plus a full round trip
+     * to the server and back.
      */
-    public function timeToFirstByte(): float
+    public function waitingTime(): float
     {
         return $this->starttransfer_time - $this->pretransfer_time;
     }
