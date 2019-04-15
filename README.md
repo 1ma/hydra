@@ -1,6 +1,6 @@
 # uma/hydra
 
-[![pipeline status](https://gitlab.com/1ma/hydra/badges/master/pipeline.svg)](https://gitlab.com/1ma/hydra/pipelines) [![coverage report](https://gitlab.com/1ma/hydra/badges/master/coverage.svg)](https://gitlab.com/1ma/hydra/commits/master)
+[![pipeline status](https://gitlab.com/1ma/hydra/badges/master/pipeline.svg)](https://gitlab.com/1ma/hydra/pipelines) [![coverage report](https://gitlab.com/1ma/hydra/badges/master/coverage.svg)](https://gitlab.com/1ma/hydra/commits/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/1ma/hydra/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/1ma/hydra/?branch=master)
 
 Hydra is a simple cURL-based concurrent HTTP client abstracted behind an easy to use PSR-7 wrapper.
 
