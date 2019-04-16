@@ -202,6 +202,10 @@ final class CurlStats
      */
     public function receivingTime(): float
     {
-        return $this->total_time - $this->starttransfer_time;
+        if (0 < $this->starttransfer_time) {
+            return $this->total_time - $this->starttransfer_time;
+        }
+
+        return 0.0;
     }
 }
