@@ -26,4 +26,7 @@ $client->load(new Request('GET', 'https://www.yahoo.com/'), $callback);
 $client->load(new Request('GET', 'https://www.amazon.com/'), $callback);
 $client->send();
 
-echo \sprintf("\nElapsed time: %f\n", \microtime(true) - $time);
+$elapsedTime = \microtime(true) - $time;
+$overhead = (1 - $callback->lastTotalTime() / $elapsedTime);
+
+echo \sprintf("\nElapsed time: %f seconds (%.2f%% overhead)\n", $elapsedTime, 100*$overhead);
