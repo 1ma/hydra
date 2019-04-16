@@ -35,6 +35,9 @@ final class Pool
         $this->options = $options;
     }
 
+    /**
+     * Add a set of jobs to the pool reusing old job connections.
+     */
     public function init(Job ...$newJobs): void
     {
         \assert($this->active());
@@ -50,6 +53,10 @@ final class Pool
         }
     }
 
+    /**
+     * Add a new job to the pool allocating a new
+     * connection, thus increasing its size.
+     */
     public function add(Job $job): void
     {
         \assert($this->active());
@@ -66,6 +73,13 @@ final class Pool
         $this->pool[(int) $job->handle] = $job;
     }
 
+    /**
+     * Waits until one request from the pool completes and returns its job.
+     *
+     * The associated cURL resource is removed from the multi_curl
+     * handle but the job itself is not removed from the pool, nor the
+     * connection is closed.
+     */
     public function pick(): Job
     {
         \assert($this->active());
@@ -84,6 +98,10 @@ final class Pool
         return $this->pool[$id];
     }
 
+    /**
+     * Overwrites an old job data with a new one, but
+     * reusing the underlying cURL resource.
+     */
     public function recycle(Job $old, Job $new): void
     {
         \assert($this->active());
@@ -104,6 +122,11 @@ final class Pool
         \curl_multi_add_handle($this->multi, $this->pool[$id]->handle);
     }
 
+    /**
+     * Closes all cURL resources.
+     *
+     * The Pool will not be usable after this operation.
+     */
     public function shutdown(): void
     {
         \assert($this->active());
