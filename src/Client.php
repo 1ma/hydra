@@ -62,23 +62,15 @@ final class Client implements ClientInterface
         while ($completed < $this->jobs) {
             $job = $this->pool->pick();
 
-            try {
-                $job->callback->handle(
-                    $job->request,
-                    Psr\Adapter::psr7fy(
-                        $job->handle,
-                        $job->responseHeaders,
-                        $job->stats->http_code
-                    ),
-                    $job->stats
-                );
-            } catch (\Throwable $exception) {
-                $this->backlog = [];
-                $this->jobs = 0;
-                $this->pool->shutdown();
-
-                throw $exception;
-            }
+            $job->callback->handle(
+                $job->request,
+                Psr\Adapter::psr7fy(
+                    $job->handle,
+                    $job->responseHeaders,
+                    $job->stats->http_code
+                ),
+                $job->stats
+            );
 
             if (!empty($this->backlog)) {
                 $this->pool->recycle($job, \array_shift($this->backlog));
