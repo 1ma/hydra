@@ -35,13 +35,21 @@ final class Pool
         $this->options = $options;
     }
 
-    public function add(Job $job): bool
+    public function init(Job ...$newJobs): void
     {
         \assert($this->active());
+        \assert(\count($newJobs) === $this->size());
 
-        if ($this->full()) {
-            return false;
+        $i = 0;
+        foreach ($this->pool as $oldJob) {
+            $this->recycle($oldJob, $newJobs[$i++]);
         }
+    }
+
+    public function add(Job $job): void
+    {
+        \assert($this->active());
+        \assert(!$this->full());
 
         $job->handle = Adapter::curlify(
             $job->request,
@@ -49,11 +57,9 @@ final class Pool
             $job->responseHeaders
         );
 
-        $this->pool[(int) $job->handle] = $job;
-
         \curl_multi_add_handle($this->multi, $job->handle);
 
-        return true;
+        $this->pool[(int) $job->handle] = $job;
     }
 
     public function pick(): Job
@@ -114,7 +120,12 @@ final class Pool
         return null !== $this->multi;
     }
 
-    private function full(): bool
+    public function size(): int
+    {
+        return \count($this->pool);
+    }
+
+    public function full(): bool
     {
         return $this->options->fixedPool !== null
             && $this->options->fixedPool === \count($this->pool);

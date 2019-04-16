@@ -17,11 +17,6 @@ final class Client implements ClientInterface
     private $backlog;
 
     /**
-     * @var int
-     */
-    private $jobs;
-
-    /**
      * @var ClientOptions
      */
     private $options;
@@ -34,32 +29,31 @@ final class Client implements ClientInterface
     public function __construct(ClientOptions $options = null)
     {
         $this->backlog = [];
-        $this->jobs = 0;
         $this->options = $options ?? new ClientOptions;
         $this->pool = new Curl\Pool($this->options);
     }
 
     public function load(RequestInterface $request, Callback $callback): void
     {
-        $this->jobs++;
-
-        if (!$this->pool->active()) {
-            $this->pool = new Curl\Pool($this->options);
-        }
-
         $job = new Job();
         $job->request = $request;
         $job->callback = $callback;
 
-        if (!$this->pool->add($job)) {
-            $this->backlog[] = $job;
-        }
+        $this->backlog[] = $job;
     }
 
     public function send(): void
     {
+        $totalJobs = \count($this->backlog);
+
+        $this->pool->init(...\array_splice($this->backlog, 0, $this->pool->size()));
+
+        while (!empty($this->backlog) && !$this->pool->full()) {
+            $this->pool->add(\array_shift($this->backlog));
+        }
+
         $completed = 0;
-        while ($completed < $this->jobs) {
+        while ($completed < $totalJobs) {
             $job = $this->pool->pick();
 
             $job->callback->handle(
@@ -81,7 +75,9 @@ final class Client implements ClientInterface
 
         \assert(empty($this->backlog));
 
-        $this->jobs = 0;
-        $this->pool->shutdown();
+        if (!$this->options->persistentPool) {
+            $this->pool->shutdown();
+            $this->pool = new Curl\Pool($this->options);
+        }
     }
 }
