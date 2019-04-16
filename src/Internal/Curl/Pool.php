@@ -142,11 +142,6 @@ final class Pool
         $this->multi = null;
     }
 
-    public function active(): bool
-    {
-        return null !== $this->multi;
-    }
-
     public function size(): int
     {
         return \count($this->pool);
@@ -156,5 +151,10 @@ final class Pool
     {
         return $this->options->fixedPool !== null
             && $this->options->fixedPool === \count($this->pool);
+    }
+
+    private function active(): bool
+    {
+        return null !== $this->multi;
     }
 }
