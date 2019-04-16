@@ -38,11 +38,15 @@ final class Pool
     public function init(Job ...$newJobs): void
     {
         \assert($this->active());
-        \assert(\count($newJobs) === $this->size());
+        \assert(\count($newJobs) <= $this->size());
 
         $i = 0;
         foreach ($this->pool as $oldJob) {
             $this->recycle($oldJob, $newJobs[$i++]);
+
+            if (!isset($newJobs[$i])) {
+                break;
+            }
         }
     }
 
