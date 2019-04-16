@@ -72,6 +72,11 @@ final class CurlStats
     /**
      * @var double
      */
+    public $appconnect_time;
+
+    /**
+     * @var double
+     */
     public $pretransfer_time;
 
     /**
@@ -151,6 +156,7 @@ final class CurlStats
     {
         $stats = new self;
         $stats->error_code = $multiInfo['result'];
+        $stats->appconnect_time = \curl_getinfo($multiInfo['handle'], CURLINFO_APPCONNECT_TIME);
 
         [
             'url' => $stats->url,
