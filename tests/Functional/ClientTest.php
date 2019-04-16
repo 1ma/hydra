@@ -103,6 +103,7 @@ final class ClientTest extends TestCase
         $customOptions->userAgent = 'foo/1.2.3';
         $customOptions->customOpts = [CURLOPT_VERBOSE => false];
         $customOptions->proxyUrl = 'http://hoverfly:8500';
+        $customOptions->persistentPool = true;
         $customOptions->fixedPool = 1;
 
         $customClient = new Client($customOptions);
@@ -111,6 +112,8 @@ final class ClientTest extends TestCase
         $customClient->send();
 
         self::assertSame(CURLE_OPERATION_TIMEDOUT, $this->callback->lastStats()->error_code);
+        self::assertSame(0.0, $this->callback->lastStats()->waitingTime());
+        self::assertSame(0.0, $this->callback->lastStats()->receivingTime());
         self::assertNull($this->callback->lastResponse());
 
         $customClient->load(new Request('GET', 'http://sleepy:1234'), $this->callback);
@@ -118,6 +121,8 @@ final class ClientTest extends TestCase
         $customClient->send();
 
         self::assertSame(CURLE_OK, $this->callback->lastStats()->error_code);
+        self::assertGreaterThan(0.0, $this->callback->lastStats()->waitingTime());
+        self::assertGreaterThan(0.0, $this->callback->lastStats()->receivingTime());
         self::assertNotNull($this->callback->lastResponse());
     }
 
