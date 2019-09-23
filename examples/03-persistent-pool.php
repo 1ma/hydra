@@ -16,16 +16,16 @@ $options->persistentPool = true;
 $request = new Request('GET', 'https://www.google.com/');
 $client = new Hydra\Client($options);
 
-$callback = new Hydra\Tests\Fixtures\DebuggingCallback();
-$client->load($request, $callback);
-$client->load($request, $callback);
-$client->load($request, $callback);
+$handler = new Hydra\Tests\Fixtures\DebuggingHandler();
+$client->load($request, $handler);
+$client->load($request, $handler);
+$client->load($request, $handler);
 $client->send();
 
 echo PHP_EOL;
 
-$callback = new Hydra\Tests\Fixtures\DebuggingCallback();
-$client->load($request, $callback);
-$client->load($request, $callback);
-$client->load($request, $callback);
+$handler = new Hydra\Tests\Fixtures\DebuggingHandler();
+$client->load($request, $handler);
+$client->load($request, $handler);
+$client->load($request, $handler);
 $client->send();

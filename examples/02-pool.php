@@ -13,18 +13,18 @@ $options = new Hydra\ClientOptions();
 $options->fixedPool = 1;
 
 $request = new Request('GET', 'https://www.google.com/');
-$callback = new Hydra\Tests\Fixtures\DebuggingCallback();
+$handler = new Hydra\Tests\Fixtures\DebuggingHandler();
 $client = new Hydra\Client($options);
 
 $time = \microtime(true);
-$client->load($request, $callback);
-$client->load($request, $callback);
-$client->load($request, $callback);
-$client->load($request, $callback);
-$client->load($request, $callback);
+$client->load($request, $handler);
+$client->load($request, $handler);
+$client->load($request, $handler);
+$client->load($request, $handler);
+$client->load($request, $handler);
 $client->send();
 
 $elapsedTime = \microtime(true) - $time;
-$overhead = (1 - $callback->lastTotalTime() / $elapsedTime);
+$overhead = (1 - $handler->lastTotalTime() / $elapsedTime);
 
 echo \sprintf("\nElapsed time: %f seconds (%.2f%% overhead)\n", $elapsedTime, 100*$overhead);

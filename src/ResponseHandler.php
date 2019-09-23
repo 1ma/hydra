@@ -7,7 +7,7 @@ namespace UMA\Hydra;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-interface Callback
+interface ResponseHandler
 {
     /**
      * Handle the incoming HTTP response.

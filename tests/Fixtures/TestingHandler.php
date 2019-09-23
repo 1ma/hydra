@@ -10,9 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use UMA\Hydra;
 
 /**
- * A fixture callback that counts
+ * A fixture ResponseHandler that counts each time it runs.
  */
-final class TestingCallback implements Hydra\Callback
+final class TestingHandler implements Hydra\ResponseHandler
 {
     /**
      * @var Assert

@@ -109,7 +109,7 @@ final class Pool
         $id = (int) $old->handle;
 
         $this->pool[$id]->request = $new->request;
-        $this->pool[$id]->callback = $new->callback;
+        $this->pool[$id]->handler = $new->handler;
         $this->pool[$id]->responseHeaders = [];
 
         $this->pool[$id]->handle = Adapter::reusatron(

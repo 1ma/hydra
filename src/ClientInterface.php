@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 
 interface ClientInterface
 {
-    public function load(RequestInterface $request, Callback $callback): void;
+    public function load(RequestInterface $request, ResponseHandler $handler): void;
 
     public function send(): void;
 }

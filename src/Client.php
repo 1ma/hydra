@@ -33,11 +33,11 @@ final class Client implements ClientInterface
         $this->pool = new Curl\Pool($this->options);
     }
 
-    public function load(RequestInterface $request, Callback $callback): void
+    public function load(RequestInterface $request, ResponseHandler $handler): void
     {
         $job = new Job();
         $job->request = $request;
-        $job->callback = $callback;
+        $job->handler = $handler;
 
         $this->backlog[] = $job;
     }
@@ -56,7 +56,7 @@ final class Client implements ClientInterface
         while ($completed < $totalJobs) {
             $job = $this->pool->pick();
 
-            $job->callback->handle(
+            $job->handler->handle(
                 $job->request,
                 Psr\Adapter::psr7fy(
                     $job->handle,

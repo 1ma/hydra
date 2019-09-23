@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use UMA\Hydra;
 use UMA\Hydra\CurlStats;
 
-final class DebuggingCallback implements Hydra\Callback
+final class DebuggingHandler implements Hydra\ResponseHandler
 {
     private $firstRun = true;
 

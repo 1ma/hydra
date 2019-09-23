@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UMA\Hydra\Internal;
 
 use Psr\Http\Message\RequestInterface;
-use UMA\Hydra\Callback;
+use UMA\Hydra\ResponseHandler;
 use UMA\Hydra\CurlStats;
 
 /**
@@ -19,9 +19,9 @@ final class Job
     public $request;
 
     /**
-     * @var Callback
+     * @var ResponseHandler
      */
-    public $callback;
+    public $handler;
 
     /**
      * @var array

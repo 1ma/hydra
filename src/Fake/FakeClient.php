@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UMA\Hydra\Fake;
 
 use Psr\Http\Message\RequestInterface;
-use UMA\Hydra\Callback;
+use UMA\Hydra\ResponseHandler;
 use UMA\Hydra\ClientInterface;
 use UMA\Hydra\CurlStats;
 
@@ -27,9 +27,9 @@ final class FakeClient implements ClientInterface
         $this->jobs = [];
     }
 
-    public function load(RequestInterface $request, Callback $callback): void
+    public function load(RequestInterface $request, ResponseHandler $handler): void
     {
-        $this->jobs[] = [$request, $callback];
+        $this->jobs[] = [$request, $handler];
     }
 
     public function send(): void
@@ -44,15 +44,15 @@ final class FakeClient implements ClientInterface
 
         /**
          * @var RequestInterface $request
-         * @var Callback $callback
+         * @var ResponseHandler $handler
          */
-        foreach ($this->jobs as [$request, $callback]) {
+        foreach ($this->jobs as [$request, $handler]) {
             $fakeResponse = $this->fakeHandler->fake($request);
 
             $fakeStats->error_code = null === $fakeResponse ? CURLE_COULDNT_CONNECT : CURLE_OK;
             $fakeStats->http_code = null === $fakeResponse ? 0 : $fakeResponse->getStatusCode();
 
-            $callback->handle($request, $fakeResponse, $fakeStats);
+            $handler->handle($request, $fakeResponse, $fakeStats);
         }
 
         $this->jobs = [];

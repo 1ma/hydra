@@ -18,11 +18,11 @@ composer require uma/hydra
 
 In a few words, you call `load` repeatedly passing a PSR-7 request and the service that will handle
 its response. Once you've loaded all the requests you want to send at once, call `sendAll`. While
-this method runs it will call each request's callback in the order it receives their responses.
-`sendAll` blocks until all responses are received and their callbacks have been executed.
+this method runs it will call each handler in the order it receives the responses.
+`sendAll` blocks until all responses are received and their handlers have been executed.
 
-Moreover, the client never throws an exception (any encountered errors are notified to the relevant
-callback without interrupting the execution flow).
+Moreover, the client never throws exceptions (any encountered errors are notified to the relevant
+handler without interrupting the execution flow).
 
 ```php
 <?php
@@ -34,7 +34,7 @@ use UMA\Hydra;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-class DemoCallback implements Hydra\Callback {
+class DemoHandler implements Hydra\ResponseHandler {
     public function handle(
         RequestInterface $request,
         ?ResponseInterface $response,
@@ -54,11 +54,11 @@ class DemoCallback implements Hydra\Callback {
 $time = \microtime(true);
 
 $client = new Hydra\Client();
-$callback = new DemoCallback();
+$handler = new DemoHandler();
 
-$client->load(new Request('GET', 'https://www.google.com/'), $callback);
-$client->load(new Request('GET', 'https://packagist.org/'), $callback);
-$client->load(new Request('GET', 'https://invalid.doma.in/'), $callback);
+$client->load(new Request('GET', 'https://www.google.com/'), $handler);
+$client->load(new Request('GET', 'https://packagist.org/'), $handler);
+$client->load(new Request('GET', 'https://invalid.doma.in/'), $handler);
 
 $client->sendAll();
 // 1 6 0.009291 https://invalid.doma.in/
@@ -75,23 +75,23 @@ echo \sprintf("\nTotal elapsed time: %s\n", \microtime(true) - $time);
 ### Client behaviour
 
 The `Client` accepts a variable number of PSR-7 requests with its `load` method, but does not send them straight away. The
-second parameter for `load` is the object that will handle the response, and it must implement the `Callback` interface.
-Callbacks need to be implemented by the end user of the library, and the same instance can be reused in different calls to `load`.
+second parameter for `load` is the object that will handle the response, and it must implement the `ResponseHandler` interface.
+ResponseHandlers need to be implemented by the end user of the library, and the same instance can be reused in different calls to `load`.
 
-Once all requests are loaded, calling `sendAll` will send all them at once, and run their callbacks in the same order that the
+Once all requests are loaded, calling `sendAll` will send all them at once, and run their handlers in the same order that the
 responses are received. `sendAll` itself is blocking (execution won't move on until all requests have been handled) and does
 not return anything. `Client` should never throw an exception, regardless of the outcome of each request.
 
-### Callback API
+### ResponseHandler API
 
-`Callback` objects receive 3 arguments in their `handle` method when the `Client` is finished with their associated request.
+`ResponseHandler` objects receive 3 arguments in their `handle` method when the `Client` is finished with their associated request.
 
 The first one is the same PSR-7 request instance that was supplied to `load`, and is useful in order to have the context of which
-response the callback is processing.
+response the handler is processing.
 
 The second one is a PSR-7 response object. It will be null if cURL did not manage to complete the HTTP requests or any given reason.
 For this reason it is advised to check the cURL error code in `$stats->error_code` before doing anything else. You MUST never throw
-an exception from a callback, as this will prevent other callbacks from running.
+an exception from a handler, as this will prevent other handlers from running.
 
 The third parameter, a `CurlStats` object is a DTO with all the statistics available to cURL about the request.
 
@@ -124,7 +124,7 @@ $customClient = new Client($customOptions);
 
 ### Why is Hydra not PSR-18 compatible?
 
-### How to write Callbacks
+### How to write ResponseHandlers
 
 
 ## Testing
