@@ -33,3 +33,12 @@ services:
     volumes:
       - .:/root/hydra
     working_dir: /root/hydra
+
+  php-7.4:
+    image: 1maa/php-dev:7.4
+    depends_on:
+      - hoverfly
+      - sleepy
+    volumes:
+      - .:/root/hydra
+    working_dir: /root/hydra

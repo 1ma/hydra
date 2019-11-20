@@ -40,3 +40,10 @@ php-7.3:
     - docker-compose up -d php-7.3
     - docker-compose exec -T php-7.3 sh -c "composer install"
     - docker-compose exec -T php-7.3 sh -c "php -dextension=/usr/lib/php/pcov.so -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --coverage-text --testdox"
+
+php-7.4:
+  stage: testing
+  script:
+    - docker-compose up -d php-7.4
+    - docker-compose exec -T php-7.4 sh -c "composer install"
+    - docker-compose exec -T php-7.4 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
