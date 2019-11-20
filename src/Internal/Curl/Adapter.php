@@ -30,6 +30,10 @@ final class Adapter
             \curl_setopt($handle, $option, $value);
         }
 
+        if (self::canDoHttp2()) {
+            \curl_setopt($handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
+        }
+
         \curl_setopt($handle, CURLOPT_URL, (string) $request->getUri());
         \curl_setopt($handle, CURLOPT_HEADER, false);
         \curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -82,5 +86,16 @@ final class Adapter
         return \array_map(function(string $name, array $values): string {
             return \sprintf('%s: %s', $name, \implode(',', $values));
         }, \array_keys($request->getHeaders()), $request->getHeaders());
+    }
+
+    /**
+     * cURL can do HTTP2 requests if its version is 7.47.0 or above
+     * and has that feature enabled.
+     */
+    private static function canDoHttp2(): bool
+    {
+        $info = \curl_version();
+
+        return \version_compare('7.47.0', $info['version']) <= 0 && ($info['features'] & CURL_VERSION_HTTP2);
     }
 }
