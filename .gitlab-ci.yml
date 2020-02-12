@@ -1,4 +1,5 @@
 stages:
+  - .post
   - diagnostics
   - testing
 
@@ -47,3 +48,8 @@ php-7.4:
     - docker-compose up -d php-7.4
     - docker-compose exec -T php-7.4 sh -c "composer install"
     - docker-compose exec -T php-7.4 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
+
+wololo:
+  stage: .post
+  script:
+    - echo "wololo"
