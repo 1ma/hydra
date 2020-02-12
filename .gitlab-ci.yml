@@ -17,9 +17,7 @@ variables:
 sanity-check:
   stage: diagnostics
   script:
-    - docker info
-    - docker version
-    - docker-compose version
+    - exit 1
 
 php-7.1:
   stage: testing
