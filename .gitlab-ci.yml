@@ -51,5 +51,6 @@ php-7.4:
 
 wololo:
   stage: .post
+  when: always
   script:
     - echo "wololo"
