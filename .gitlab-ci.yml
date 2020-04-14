@@ -1,20 +1,20 @@
 stages:
-  - diagnostics
   - testing
 
 services:
-  - docker:dind
+  - docker:19.03.5-dind
 
 image:
-  name: docker/compose:1.23.2
-  entrypoint: [""]
+  name: docker/compose:1.25.5
 
 variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
+  DOCKER_CERT_PATH: /certs/client
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: /certs
+  DOCKER_TLS_VERIFY: 1
 
 sanity-check:
-  stage: diagnostics
+  stage: .pre
   script:
     - docker info
     - docker version
@@ -26,6 +26,8 @@ php-7.1:
     - docker-compose up -d php-7.1
     - docker-compose exec -T php-7.1 sh -c "composer install"
     - docker-compose exec -T php-7.1 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
+  after_script:
+    - docker-compose down -v
 
 php-7.2:
   stage: testing
@@ -33,17 +35,23 @@ php-7.2:
     - docker-compose up -d php-7.2
     - docker-compose exec -T php-7.2 sh -c "composer install"
     - docker-compose exec -T php-7.2 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
+  after_script:
+    - docker-compose down -v
 
 php-7.3:
   stage: testing
   script:
     - docker-compose up -d php-7.3
     - docker-compose exec -T php-7.3 sh -c "composer install"
-    - docker-compose exec -T php-7.3 sh -c "php -dextension=/usr/lib/php/pcov.so -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --coverage-text --testdox"
+    - docker-compose exec -T php-7.3 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
+  after_script:
+    - docker-compose down -v
 
 php-7.4:
   stage: testing
   script:
     - docker-compose up -d php-7.4
     - docker-compose exec -T php-7.4 sh -c "composer install"
-    - docker-compose exec -T php-7.4 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox"
+    - docker-compose exec -T php-7.4 sh -c "php -dzend.assertions=1 -dassert.exception=1 /usr/local/bin/phpunit --testdox  --coverage-text"
+  after_script:
+    - docker-compose down -v
