@@ -2,10 +2,10 @@ stages:
   - testing
 
 services:
-  - docker:19.03.5-dind
+  - docker:19.03.15-dind
 
 image:
-  name: docker/compose:1.25.5
+  name: docker/compose:1.29.2
 
 variables:
   DOCKER_CERT_PATH: /certs/client

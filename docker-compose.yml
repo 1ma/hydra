@@ -1,7 +1,7 @@
 version: "3"
 services:
   hoverfly:
-    image: spectolabs/hoverfly:v1.1.1
+    image: spectolabs/hoverfly:latest
     command: -capture
 
   sleepy:
