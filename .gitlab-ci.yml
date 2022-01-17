@@ -4,14 +4,15 @@ stages:
 services:
   - docker:19.03.15-dind
 
-image:
-  name: docker/compose:1.29.2
+image: docker/compose:1.29.2
 
 variables:
+  DOCKER_BUILDKIT: 1
   DOCKER_CERT_PATH: /certs/client
   DOCKER_HOST: tcp://docker:2376
   DOCKER_TLS_CERTDIR: /certs
   DOCKER_TLS_VERIFY: 1
+
 
 sanity-check:
   stage: .pre
